@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>个人通讯录系统</title>
+  </head>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <body>
+    <div class="head">
+      <div>
+        <span>姓名：</span>
+        <input type="text" name="name" id="" />
+      </div>
+      <div>
+        <span>电话：</span>
+        <input type="text" name="phone" id="" />
+      </div>
+      <div>
+        <span>住址：</span>
+        <input type="text" name="address" id="" />
+      </div>
+      <div>
+        <button id="add" class="btn">添加</button>
+      </div>
+    </div>
+
+    <div class="body">
+      <table>
+        <thead>
+          <tr>
+            <th>姓名</th>
+            <th>电话</th>
+            <th>住址</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </body>
+
+  <script>
+    const url = "http://127.0.0.1:3000";
+    window.onload = function () {
+      //删除
+      const deleteData = function (e) {
+        if (e.target.innerText == "删除") {
+          e.target.parentNode.parentNode.remove();
+          let name = e.target.parentNode.parentNode.children[0].innerText;
+          // 发送请求
+          axios
+            .delete(url + "/contacts/" + name)
+            .then(function (response) {
+              console.log(response);
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        }
+      };
+
+      //修改
+      const changeData = function (e) {
+        if (e.target.innerText == "修改") {
+          let name = prompt("请输入姓名：");
+          let phone = prompt("请输入电话：");
+          let address = prompt("请输入地址：");
+          let tr = document.createElement("tr");
+          let td1 = document.createElement("td");
+          let td2 = document.createElement("td");
+          let td3 = document.createElement("td");
+          let td4 = document.createElement("td");
+          td1.innerText = name;
+          td2.innerText = phone;
+          td3.innerText = address;
+          td4.innerHTML = `<button id="delete" class="btn">删除</button><button id="register" class="btn">修改</button>`;
+          tr.append(td1, td2, td3, td4);
+          e.target.parentNode.parentNode.replaceWith(tr);
+
+          // 为创建元素绑定事件
+          td4.addEventListener("click", deleteData);
+          td4.addEventListener("click", changeData);
+
+          // 发送请求
+          axios
+            .put(
+              url + "/contacts/" + name,
+              {
+                name: name,
+                phone: phone,
+                address: address,
+              },
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  "Access-Control-Allow-Origin": "*",
+                },
+              }
+            )
+            .then(function (response) {
+              console.log(response);
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        }
+      };
+
+      //获取数据并渲染
+      let contacts = [];
+      const getData = function () {
+        axios
+          .get(url + "/contacts", {
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+            },
+          })
+          .then(async function (response) {
+            contacts = response.data;
+            console.log(contacts);
+            contacts.forEach(function (item) {
+              let tr = document.createElement("tr");
+              let td1 = document.createElement("td");
+              let td2 = document.createElement("td");
+              let td3 = document.createElement("td");
+              let td4 = document.createElement("td");
+              td1.innerText = item.name;
+              td2.innerText = item.phone;
+              td3.innerText = item.address;
+              td4.innerHTML = `<button id="delete" class="btn">删除</button><button id="register" class="btn">修改</button>`;
+              tr.append(td1, td2, td3, td4);
+              document.querySelector("tbody").append(tr);
+
+              // 为创建元素绑定事件
+              td4.addEventListener("click", deleteData);
+              td4.addEventListener("click", changeData);
+            });
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      };
+      getData();
+      //添加
+      document.getElementById("add").addEventListener("click", function () {
+        let name = document.querySelector("input[name='name']").value;
+        let phone = document.querySelector("input[name='phone']").value;
+        let address = document.querySelector("input[name='address']").value;
+        let tr = document.createElement("tr");
+        let td1 = document.createElement("td");
+        let td2 = document.createElement("td");
+        let td3 = document.createElement("td");
+        let td4 = document.createElement("td");
+        td1.innerText = name;
+        td2.innerText = phone;
+        td3.innerText = address;
+        td4.innerHTML = `<button id="delete" class="btn">删除</button><button id="register" class="btn">修改</button>`;
+        tr.append(td1, td2, td3, td4);
+        document.querySelector("tbody").append(tr);
+
+        // 为创建元素绑定事件
+        td4.addEventListener("click", deleteData);
+        td4.addEventListener("click", changeData);
+
+        // 发送请求
+        axios
+          .post(
+            url + "/contacts",
+            {
+              name: name,
+              phone: phone,
+              address: address,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+              },
+            }
+          )
+          .then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      });
+    };
+  </script>
+
+  <style>
+    .head {
+      width: 100%;
+      display: flex;
+      background-color: pink;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+    }
+    .btn {
+      background-color: skyblue;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      padding: 8px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      transition-duration: 0.4s;
+      -webkit-transition-duration: 0.4s;
+    }
+    .body {
+      margin-top: 20px;
+    }
+    .body .btn {
+      padding: 4px 10px;
+      margin-right: 5px;
+      font-size: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    tr,
+    th,
+    td {
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    .btn:hover {
+      box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24),
+        0 17px 50px 0 rgba(0, 0, 0, 0.19);
+    }
+  </style>
+</html>
