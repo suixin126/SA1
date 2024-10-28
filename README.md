@@ -1,9 +1,15 @@
-第一次实验代码在main中：
+实验2代码在main中：
 <br>
 可视化界面项目代码在myFrame软件包中
 <br>
-第二次实验代码在B/S分支和C/S分支中：
+实验3代码在B/S分支和C/S分支中：
 <br>
 C/S架构代码在C/S分支中
 <br>
 B/S架构代码在B/S分支中
+<br>
+实验4代码在WebService1和WebService2分支中：
+<br>
+任务1代码在WebService2中
+<br>
+任务2代码在WebService1中
